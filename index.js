@@ -2,6 +2,8 @@
 let $ = require('autoload-modules')({paths: module.paths});
 
 module.exports = class {
+  that = this;
+
   options = {
     log: console.log, pairJoin: ': ', inlineJoin: ', ', labelStyle: (text) => '' + text, textStyle: (text) => '' + text
   };
@@ -26,38 +28,60 @@ module.exports = class {
     }
   }
 
-  style(text = '', textStyle = this.options.textStyle, log = true) {
+  style(text = '', textStyle = that.options.textStyle, log = true) {
     let that = this;
     let useText = textStyle(text);
     that.doLog(useText, log);
-    return uesText;
+    return useText;
   }
 
-  format(text = '', args = [], textStyle = this.options.textStyle, log = true) {
+  format(text = '', args = [], textStyle = that.options.textStyle, log = true) {
     let that = this;
     args.unshift(text);
     return that.style($.util.format.apply(null, args), textStyle, log);
   }
 
-  inline(items = [], log = true) {
+  multiLine(items = [], log = true) {
     let that = this;
+    let options = that.options;
     let data = [];
 
     items.forEach((item) => {
       if ($.util.isArray(item)) {
-        let [text = '', style = that.options.textStyle] = item;
-        data.push(style(text));
+        let [text = '', textStyle = options.textStyle] = item;
+        data.push(textStyle(text));
       } else {
-        data.push(that.default.style(item));
+        data.push(options.textStyle(item));
       }
     });
 
-    let useText = data.join(that.options.inlineJoin);
+    data.forEach((item) => {
+      that.doLog(item, log);
+    });
+
+    return data;
+  }
+
+  inline(items = [], log = true) {
+    let that = this;
+    let options = that.options;
+    let data = [];
+
+    items.forEach((item) => {
+      if ($.util.isArray(item)) {
+        let [text = '', textStyle = options.textStyle] = item;
+        data.push(textStyle(text));
+      } else {
+        data.push(options.textStyle(item));
+      }
+    });
+
+    let useText = data.join(options.inlineJoin);
     that.doLog(useText, log);
     return useText;
   }
 
-  pair(label = '', text = '', {labelStyle = this.options.labelStyle, textStyle= this.options.textStyle} = {}, log = false) {
+  pair(label = '', text = '', {labelStyle = that.options.labelStyle, textStyle = that.options.textStyle} = {}, log = false) {
     let that = this;
     let useText = labelStyle(label + that.options.pairJoin) + textStyle(text);
     that.doLog(useText, log);
@@ -66,6 +90,7 @@ module.exports = class {
 
   pairItems(items = [], inline = false, log = false) {
     let that = this;
+    let options = that.options;
     let data = [];
 
     items.forEach((item) => {
@@ -73,17 +98,17 @@ module.exports = class {
         let [label = '', text = '', style = {}] = item;
         data.push(that.pair(label, text, style, false));
       } else {
-        data.push(that.default.style(item));
+        data.push(options.textStyle(item));
       }
     });
 
     if (inline) {
-      that.doLog(data.join(that.options.inlineJoin), log);
-    } else {
-      data.forEach((item) => {
-        that.doLog(item, log);
-      });
+      return that.inline(data, log);
     }
+
+    data.forEach((item) => {
+      that.doLog(item, log);
+    });
 
     return data;
   }
