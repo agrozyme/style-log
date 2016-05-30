@@ -1,0 +1,19 @@
+{
+  "name": "style-log",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agrozyme/style-log.git"
+  },
+  "author": "agrozyme <agrozyme@gmail.com> (https://github.com/agrozyme)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agrozyme/style-log/issues"
+  },
+  "homepage": "https://github.com/agrozyme/style-log#readme"
+}
