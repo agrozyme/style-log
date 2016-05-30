@@ -5,21 +5,18 @@ module.exports = class {
 
   constructor(options = {}) {
     let that = this;
-    let defaultOptions = {
+    that.options = Object.assign({}, that.defaultOptions(), options);
+    return that;
+  }
+
+  defaultOptions() {
+    return {
       log: console.log,
       pairJoin: ': ',
       inlineJoin: ', ',
       labelStyle: (text) => '' + text,
       textStyle: (text) => '' + text
     };
-
-    that.options = {};
-
-    Object.keys(defaultOptions).forEach((index) => {
-      that.options[index] = (options.hasOwnProperty(index)) ? options[index] : defaultOptions[index];
-    });
-
-    return that;
   }
 
   doLog(text = '', log = true) {
@@ -32,7 +29,7 @@ module.exports = class {
 
   doMultiLog(data = [], inline = false, log = true) {
     let that = this;
-    
+
     if (inline) {
       return that.inline(data, log);
     }
@@ -97,9 +94,10 @@ module.exports = class {
     return useText;
   }
 
-  pair(label = '', text = '', {labelStyle = this.options.labelStyle, textStyle = this.options.textStyle} = {}, log = true) {
+  pair(label = '', text = '', options = {}, log = true) {
     let that = this;
-    let useText = labelStyle(label + that.options.pairJoin) + textStyle(text);
+    let useOptions = Object.assign({}, that.options, options);
+    let useText = useOptions.labelStyle(label + useOptions.pairJoin) + useOptions.textStyle(text);
     that.doLog(useText, log);
     return useText;
   }
