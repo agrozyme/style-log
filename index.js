@@ -2,19 +2,21 @@
 let $ = require('autoload-modules')({paths: module.paths});
 
 module.exports = class {
-  that = this;
-
-  options = {
-    log: console.log, pairJoin: ': ', inlineJoin: ', ', labelStyle: (text) => '' + text, textStyle: (text) => '' + text
-  };
 
   constructor(options = {}) {
     let that = this;
+    let defaultOptions = {
+      log: console.log,
+      pairJoin: ': ',
+      inlineJoin: ', ',
+      labelStyle: (text) => '' + text,
+      textStyle: (text) => '' + text
+    };
 
-    Object.keys(that.options).forEach((index)=> {
-      if (options.hasOwnProperty(index)) {
-        that.options[index] = options[index];
-      }
+    that.options = {};
+
+    Object.keys(defaultOptions).forEach((index) => {
+      that.options[index] = (options.hasOwnProperty(index)) ? options[index] : defaultOptions[index];
     });
 
     return that;
@@ -28,14 +30,28 @@ module.exports = class {
     }
   }
 
-  style(text = '', textStyle = that.options.textStyle, log = true) {
+  doMultiLog(data = [], inline = false, log = true) {
+    let that = this;
+    
+    if (inline) {
+      return that.inline(data, log);
+    }
+
+    data.forEach((item) => {
+      that.doLog(item, log);
+    });
+
+    return data;
+  }
+
+  style(text = '', textStyle = this.options.textStyle, log = true) {
     let that = this;
     let useText = textStyle(text);
     that.doLog(useText, log);
     return useText;
   }
 
-  format(text = '', args = [], textStyle = that.options.textStyle, log = true) {
+  format(text = '', args = [], textStyle = this.options.textStyle, log = true) {
     let that = this;
     args.unshift(text);
     return that.style($.util.format.apply(null, args), textStyle, log);
@@ -81,14 +97,14 @@ module.exports = class {
     return useText;
   }
 
-  pair(label = '', text = '', {labelStyle = that.options.labelStyle, textStyle = that.options.textStyle} = {}, log = false) {
+  pair(label = '', text = '', {labelStyle = this.options.labelStyle, textStyle = this.options.textStyle} = {}, log = true) {
     let that = this;
     let useText = labelStyle(label + that.options.pairJoin) + textStyle(text);
     that.doLog(useText, log);
     return useText;
   }
 
-  pairItems(items = [], inline = false, log = false) {
+  pairArray(items = [], inline = false, log = true) {
     let that = this;
     let options = that.options;
     let data = [];
@@ -102,14 +118,18 @@ module.exports = class {
       }
     });
 
-    if (inline) {
-      return that.inline(data, log);
-    }
+    return that.doMultiLog(data, inline, log);
+  }
 
-    data.forEach((item) => {
-      that.doLog(item, log);
+  pairObject(items = {}, inline = false, log = true) {
+    let that = this;
+    let data = [];
+
+    Object.keys(items).forEach((index) => {
+      data.push(that.pair(index, items[index], {}, false));
     });
 
-    return data;
+    return that.doMultiLog(data, inline, log);
   }
+
 };
