@@ -11,9 +11,16 @@
     "url": "git+https://github.com/agrozyme/style-log.git"
   },
   "author": "agrozyme <agrozyme@gmail.com> (https://github.com/agrozyme)",
+  "engines": {
+    "node": ">=6.0.0",
+    "npm": ">=3.0.0"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/agrozyme/style-log/issues"
   },
-  "homepage": "https://github.com/agrozyme/style-log#readme"
+  "homepage": "https://github.com/agrozyme/style-log#readme",
+  "dependencies": {
+    "autoload-modules": "^1.0.4"
+  }
 }
