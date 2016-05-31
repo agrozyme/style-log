@@ -2,11 +2,9 @@
 let $ = require('autoload-modules')({paths: module.paths});
 
 module.exports = class {
-
   constructor(options = {}) {
-    let that = this;
-    that.options = Object.assign({}, that.defaultOptions(), options);
-    return that;
+    this.options = Object.assign({}, this.defaultOptions(), options);
+    return this;
   }
 
   defaultOptions() {
@@ -20,114 +18,88 @@ module.exports = class {
   }
 
   doLog(text = '', log = true) {
-    let that = this;
-
     if (log) {
-      that.options.log(text);
+      this.options.log(text);
     }
   }
 
-  doMultiLog(data = [], inline = false, log = true) {
-    let that = this;
-
-    if (inline) {
-      return that.inline(data, log);
+  doMultiLog(data = [], log = true) {
+    if (log) {
+      data.forEach((text) => {
+        this.options.log(text);
+      });
     }
-
-    data.forEach((item) => {
-      that.doLog(item, log);
-    });
 
     return data;
   }
 
+  inline(items = [], inlineJoin = this.options.inlineJoin, log = true) {
+    let text = items.join(inlineJoin);
+    this.doLog(text, log);
+    return text;
+  }
+
+  multiLine(items = [], textStyle = this.options.textStyle, log = true) {
+    let data = [];
+
+    items.forEach((item) => {
+      if ($.util.isArray(item)) {
+        let [text = '', useTextStyle = textStyle] = item;
+        data.push(useTextStyle(text));
+      } else {
+        data.push(item);
+      }
+    });
+
+    return this.doMultiLog(data, log);
+  }
+
   style(text = '', textStyle = this.options.textStyle, log = true) {
-    let that = this;
     let useText = textStyle(text);
-    that.doLog(useText, log);
+    this.doLog(useText, log);
     return useText;
   }
 
   format(text = '', args = [], textStyle = this.options.textStyle, log = true) {
-    let that = this;
     args.unshift(text);
-    return that.style($.util.format.apply(null, args), textStyle, log);
-  }
-
-  multiLine(items = [], log = true) {
-    let that = this;
-    let options = that.options;
-    let data = [];
-
-    items.forEach((item) => {
-      if ($.util.isArray(item)) {
-        let [text = '', textStyle = options.textStyle] = item;
-        data.push(textStyle(text));
-      } else {
-        data.push(options.textStyle(item));
-      }
-    });
-
-    data.forEach((item) => {
-      that.doLog(item, log);
-    });
-
-    return data;
-  }
-
-  inline(items = [], log = true) {
-    let that = this;
-    let options = that.options;
-    let data = [];
-
-    items.forEach((item) => {
-      if ($.util.isArray(item)) {
-        let [text = '', textStyle = options.textStyle] = item;
-        data.push(textStyle(text));
-      } else {
-        data.push(options.textStyle(item));
-      }
-    });
-
-    let useText = data.join(options.inlineJoin);
-    that.doLog(useText, log);
-    return useText;
+    return this.style($.util.format.apply(null, args), textStyle, log);
   }
 
   pair(label = '', text = '', options = {}, log = true) {
-    let that = this;
-    let useOptions = Object.assign({}, that.options, options);
+    let useOptions = Object.assign({}, this.options, options);
     let useText = useOptions.labelStyle(label + useOptions.pairJoin) + useOptions.textStyle(text);
-    that.doLog(useText, log);
+    this.doLog(useText, log);
     return useText;
   }
 
-  pairArray(items = [], inline = false, log = true) {
-    let that = this;
-    let options = that.options;
+  pairArray(items = [], options = {}, log = true) {
+    let useOptions = Object.assign({}, this.options, options);
+    let inlineJoin = useOptions.inlineJoin;
     let data = [];
 
     items.forEach((item) => {
       if ($.util.isArray(item)) {
         let [label = '', text = '', style = {}] = item;
-        data.push(that.pair(label, text, style, false));
+        let useStyle = Object.assign({}, useOptions, style);
+        data.push(this.pair(label, text, useStyle, false));
       } else {
-        data.push(options.textStyle(item));
+        data.push(item);
       }
     });
 
-    return that.doMultiLog(data, inline, log);
+    return (inlineJoin) ? this.inline(data, inlineJoin, log) : this.doMultiLog(data, log);
   }
 
-  pairObject(items = {}, inline = false, log = true) {
-    let that = this;
+  pairObject(items = {}, options = {}, log = true) {
+    let useOptions = Object.assign({}, this.options, options);
+    let inlineJoin = useOptions.inlineJoin;
     let data = [];
 
     Object.keys(items).forEach((index) => {
-      data.push(that.pair(index, items[index], {}, false));
+      data.push(this.pair(index, items[index], useOptions, false));
     });
 
-    return that.doMultiLog(data, inline, log);
+    return (inlineJoin) ? this.inline(data, inlineJoin, log) : this.doMultiLog(data, log);
   }
 
 };
