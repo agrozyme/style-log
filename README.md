@@ -1,6 +1,10 @@
 # style-log
 這是用來產生有顏色 (樣式) 的 Log 訊息的模組
 
+[![NPM](https://nodei.co/npm/style-log.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/style-log/)
+
+[![NPM](https://nodei.co/npm-dl/style-log.png)](https://nodei.co/npm/style-log/)
+
 # 簡介
 - 使用 ES6 的語法
 - 可指定 log 函數
