@@ -29,7 +29,7 @@ let log = new styleLog({
   textStyle: colors.gray
 });
 
-let options = {labelStyle: colors.magenta, textStyle: colors.gray};
+let options = {labelStyle: colors.magenta, textStyle: colors.gray, inlineJoin: false};
 let styleArrayItems = [['text1', options], 123];
 let pairObjectItem = {key1: 'value1', key2: 'value2'};
 let pairArrayItems = [['key1', 'value1', options], 123];
@@ -47,7 +47,7 @@ log.pairObject(pairObjectItem, options);
 
 - log ```function```: 實際上執行 log 功能時的函數，預設值為 ```console.log```
 
-- pairJoin ```string```: 處理 Key-Value 訊息時，串接 Key 與 Value 間的字串，著色時會被當成 Key 的一部分，預設值為 ```: ```
+- pairJoin ```string```: 處理 Key-Value 訊息時，串接 Key 與 Value 間的字串，著色時不會有任何樣式，預設值為 ```: ```
 
 - inlineJoin ```string```: 把多行訊息合併成一行時，串接多行訊息的字串，著色時不會有任何樣式，預設值為 ```, ```
 
@@ -105,4 +105,3 @@ log.pairObject(pairObjectItem, options);
 
   - 如果 false == inlineJoin，在實際做 Log 時，會做多行輸出
   - 其他狀況會把訊息合併成一行輸出，但傳回值依然是字串陣列
-

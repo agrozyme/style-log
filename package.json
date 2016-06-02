@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/agrozyme/style-log#readme",
   "dependencies": {
-    "autoload-modules": "^1.0.4"
+    "autoload-modules": "^1.0.5"
   }
 }

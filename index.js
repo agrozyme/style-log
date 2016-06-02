@@ -76,7 +76,8 @@ module.exports = class {
 
   pair(label = '', text = '', options = {}, log = true) {
     let useOptions = Object.assign({}, this.options, options);
-    let useText = this.style(label + useOptions.pairJoin, useOptions.labelStyle, false) +
+    let useText = this.style(label, useOptions.labelStyle, false) +
+      useOptions.pairJoin +
       this.style(text, useOptions.textStyle, false);
     this.doLog(useText, log);
     return useText;
