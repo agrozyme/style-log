@@ -17,7 +17,7 @@ npm install style-log --save
 # 範例
 
 ```js
-let styleLog = require(options);
+let styleLog = require('style-log');
 let gutil = require('gulp-util');
 let colors = gutil.colors;
 
