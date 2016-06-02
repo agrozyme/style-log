@@ -39,25 +39,34 @@ module.exports = class {
     return text;
   }
 
-  multiLine(items = [], textStyle = this.options.textStyle, log = true) {
+  style(text = '', textStyle = this.options.textStyle, log = true) {
+    let useText = '';
+
+    try {
+      useText = ($.util.isFunction(textStyle)) ? textStyle(text) : text;
+    } catch (error) {
+      useText = text;
+    }
+
+    this.doLog(useText, log);
+    return useText;
+  }
+
+  styleArray(items = [], options = {}, log = true) {
+    let useOptions = Object.assign({}, this.options, options);
+    let inlineJoin = useOptions.inlineJoin;
     let data = [];
 
     items.forEach((item) => {
       if ($.util.isArray(item)) {
-        let [text = '', useTextStyle = textStyle] = item;
-        data.push(useTextStyle(text));
+        let [text = '', useTextStyle = useOptions.textStyle] = item;
+        data.push(this.style(text, useTextStyle, false));
       } else {
-        data.push(item);
+        data.push(this.style(item, useOptions.textStyle, false));
       }
     });
 
-    return this.doMultiLog(data, log);
-  }
-
-  style(text = '', textStyle = this.options.textStyle, log = true) {
-    let useText = textStyle(text);
-    this.doLog(useText, log);
-    return useText;
+    return (inlineJoin) ? this.inline(data, inlineJoin, log) : this.doMultiLog(data, log);
   }
 
   format(text = '', args = [], textStyle = this.options.textStyle, log = true) {
@@ -67,7 +76,8 @@ module.exports = class {
 
   pair(label = '', text = '', options = {}, log = true) {
     let useOptions = Object.assign({}, this.options, options);
-    let useText = useOptions.labelStyle(label + useOptions.pairJoin) + useOptions.textStyle(text);
+    let useText = this.style(label + useOptions.pairJoin, useOptions.labelStyle, false) +
+      this.style(text, useOptions.textStyle, false);
     this.doLog(useText, log);
     return useText;
   }
@@ -83,7 +93,7 @@ module.exports = class {
         let useStyle = Object.assign({}, useOptions, style);
         data.push(this.pair(label, text, useStyle, false));
       } else {
-        data.push(item);
+        data.push(this.style(item, useOptions.textStyle, false));
       }
     });
 
